@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PathCredit Logger</title>
+
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      width: 600px;
+      margin-top: 40px;
+    }
+
+    /* form layout */
+    .form-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .form-row input,
+    .form-row select {
+      width: 150px;
+      height: 35px;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 80px;
+      height: 35px;
+      cursor: pointer;
+    }
+
+    h2 {
+      margin-top: 20px;
+    }
+
+    /* activity list layout */
+    .list-header,
+    .list-row {
+      display: grid;
+      grid-template-columns: 1fr 150px 150px;
+      padding: 8px;
+      border-radius: 5px;
+      align-items: center;
+    }
+
+    .list-header {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .list-row {
+      background: #f5f5f5;
+      margin-top: 6px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- log activity form -->
+  <h2>Log Activity</h2>
+
+  <div class="form-row">
+    <input type="text" id="name" placeholder="Activity Name" />
+
+    <select id="category">
+      <option value="">Select Category</option>
+      <option>Academic</option>
+      <option>Technical</option>
+      <option>Cultural</option>
+      <option>Sports</option>
+    </select>
+
+    <input type="date" id="date" />
+
+    <button onclick="addActivity()">Add</button>
+  </div>
+
+  <!-- error message for invalid input -->
+  <p id="error" style="color:red;"></p>
+
+  <hr>
+
+  <!-- activity feed -->
+  <h2>Activity Feed</h2>
+
+  <select onchange="filterActivities()" id="filter">
+    <option value="All">All</option>
+    <option>Academic</option>
+    <option>Technical</option>
+    <option>Cultural</option>
+    <option>Sports</option>
+  </select>
+
+  <div class="list-header">
+    <div>Activity</div>
+    <div>Category</div>
+    <div>Date</div>
+  </div>
+
+  <div id="list"></div>
+
+</div>
+
+<script>
+
+  let activities = [];
+
+
+  // add activity
+  function addActivity() {
+
+    const nameInput = document.getElementById("name");
+    const categoryInput = document.getElementById("category");
+    const dateInput = document.getElementById("date");
+
+    const name = nameInput.value.trim();
+    const category = categoryInput.value;
+    const date = dateInput.value;
+
+    // validate input fields
+    if (!name || !category || !date) {
+      document.getElementById("error").innerText = "Please fill all fields";
+      return;
+    }
+
+    // clear error if valid
+    document.getElementById("error").innerText = "";
+
+    // create activity object and store it
+    activities.push({ name, category, date });
+
+    displayActivities(activities);
+
+    // clear inputs after adding
+    nameInput.value = "";
+    categoryInput.value = "";
+    dateInput.value = "";
+  }
+
+
+  // display activities
+  
+  function displayActivities(data) {
+
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    // if no activities at all
+    if (activities.length === 0) {
+      list.innerHTML = "No activities logged yet";
+      return;
+    }
+
+    // if filter applied but no results
+    if (data.length === 0) {
+      list.innerHTML = "No activities in this category";
+      return;
+    }
+
+    data.forEach(a => {
+
+      const row = document.createElement("div");
+      row.className = "list-row";
+
+      row.innerHTML = `
+        <div>${a.name}</div>
+        <div>${a.category}</div>
+        <div>${a.date}</div>
+      `;
+
+      list.appendChild(row);
+    });
+  }
+
+
+  // filter activities
+  
+  function filterActivities() {
+
+    const selected = document.getElementById("filter").value;
+
+    if (selected === "All") {
+      displayActivities(activities);
+    } else {
+      const filtered = activities.filter(a => a.category === selected);
+      displayActivities(filtered);
+    }
+  }
+
+</script>
+
+</body>
+</html>
